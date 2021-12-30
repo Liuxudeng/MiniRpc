@@ -45,6 +45,11 @@ public class RpcClientProxy implements InvocationHandler {
      */
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+        /**
+         * 注意：这里的interfaceName methodName parameters paramTypes都是客户端要发送出去的信息
+         *
+         * 我们将它组成rpcRequest对象
+         */
         RpcRequest rpcRequest = RpcRequest.builder().interfaceName(method.getDeclaringClass()
                         .getName()).methodName(method.getName())
                 .parameters(args)
