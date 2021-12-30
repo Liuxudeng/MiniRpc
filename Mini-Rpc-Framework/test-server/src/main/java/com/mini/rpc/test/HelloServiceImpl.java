@@ -1,4 +1,4 @@
-package mini.rpc.test;
+package com.mini.rpc.test;
 
 import com.mini.rpc.api.HelloObject;
 import com.mini.rpc.api.HelloService;
