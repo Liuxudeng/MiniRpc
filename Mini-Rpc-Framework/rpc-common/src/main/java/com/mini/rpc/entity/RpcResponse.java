@@ -1,7 +1,9 @@
 package com.mini.rpc.entity;
 
 import com.mini.rpc.enumeration.ResponseCode;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
@@ -9,6 +11,9 @@ import java.io.Serializable;
  * 这个类包含的信息是服务端给客户端的响应
  * @param <T>
  */
+
+@AllArgsConstructor
+@NoArgsConstructor
 
 @Data
 public class RpcResponse <T> implements Serializable {

@@ -1,8 +1,8 @@
-package com.mini.rpc.server;
+package com.mini.rpc.socket.server;
 
+import com.mini.rpc.RequestHandler;
+import com.mini.rpc.RpcServer;
 import com.mini.rpc.registry.ServiceRegistry;
-import com.sun.org.apache.xml.internal.dtm.ref.sax2dtm.SAX2DTM2;
-import com.sun.scenario.effect.impl.prism.PrImage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,10 +14,10 @@ import java.util.concurrent.*;
 /**
  * 服务端实现反射调用
  */
-public class RpcServer {
+public class SocketServer implements RpcServer {
     private final ExecutorService threadPool;
     //设置日志
-    private static final Logger logger = LoggerFactory.getLogger(RpcServer.class);
+    private static final Logger logger = LoggerFactory.getLogger(SocketServer.class);
 
     /**
      * 线程池相关
@@ -33,7 +33,7 @@ public class RpcServer {
     private final ServiceRegistry serviceRegistry;
 
 
-    public RpcServer(ServiceRegistry serviceRegistry) {
+    public SocketServer(ServiceRegistry serviceRegistry) {
         // this.threadPool = threadPool1;
         /**
          * 设置线程池默认相关
@@ -63,6 +63,7 @@ public class RpcServer {
     /**
      * 注册服务
      */
+        @Override
         public void start(int port){
             try (ServerSocket serverSocket = new ServerSocket(port)) {
               //  logger.info("服务器正在启动...");

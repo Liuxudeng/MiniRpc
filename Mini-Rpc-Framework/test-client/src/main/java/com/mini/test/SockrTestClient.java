@@ -1,14 +1,19 @@
 package com.mini.test;
 
+import com.mini.rpc.RpcClientProxy;
 import com.mini.rpc.api.HelloObject;
 import com.mini.rpc.api.HelloService;
-import com.mini.rpc.client.RpcClientProxy;
 
-public class TestClient {
+import com.mini.rpc.socket.client.SocketClient;
+
+public class SockrTestClient {
 
     public static void main(String[] args) {
+        //拿到rerquest
+        SocketClient client = new SocketClient("127.0.0.1",9000);
+
         //接口与代理对象之间的中介对象
-        RpcClientProxy proxy = new RpcClientProxy("127.0.0.1", 9000);
+        RpcClientProxy proxy = new RpcClientProxy(client);
         //创建代理对象
         HelloService helloService = proxy.getProxy(HelloService.class);
         //接口方法的参数对象

@@ -1,7 +1,9 @@
 package com.mini.rpc.entity;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
@@ -11,9 +13,10 @@ import java.io.Serializable;
 
 
 @Data
-
+@AllArgsConstructor
+@NoArgsConstructor
 //使用创建者模式 一次性给所有变量附初始值
-@Builder
+
 public class RpcRequest implements Serializable {
 
     /**

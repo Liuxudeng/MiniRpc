@@ -1,8 +1,7 @@
-package com.mini.rpc.server;
+package com.mini.rpc.socket.server;
 
 import com.mini.rpc.entity.RpcRequest;
 import com.mini.rpc.entity.RpcResponse;
-import com.mini.rpc.registry.ServiceRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

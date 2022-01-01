@@ -2,9 +2,10 @@ package com.mini.rpc.test;
 
 import com.mini.rpc.api.HelloService;
 import com.mini.rpc.registry.DefaultServiceRegistry;
-import com.mini.rpc.server.RpcServer;
 
-public class TestServer {
+import com.mini.rpc.socket.server.SocketServer;
+
+public class SocketTestServer {
     public static void main(String[] args) {
         HelloService helloService = new HelloServiceImpl();
 
@@ -16,9 +17,9 @@ public class TestServer {
 
 
 
-        RpcServer rpcServer = new RpcServer(serviceRegistry);
+        SocketServer socketServer = new SocketServer(serviceRegistry);
 
-        rpcServer.start(9000);
+        socketServer.start(9000);
 
 
 

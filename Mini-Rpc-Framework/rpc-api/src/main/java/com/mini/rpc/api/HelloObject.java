@@ -2,6 +2,7 @@ package com.mini.rpc.api;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
@@ -13,7 +14,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 
 
-
+@NoArgsConstructor
 
 public class HelloObject implements Serializable {
 

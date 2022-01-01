@@ -1,4 +1,4 @@
-package com.mini.rpc.server;
+package com.mini.rpc;
 
 import com.mini.rpc.entity.RpcRequest;
 import com.mini.rpc.entity.RpcResponse;
@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.net.Socket;
 
 public class RequestHandler {
 
