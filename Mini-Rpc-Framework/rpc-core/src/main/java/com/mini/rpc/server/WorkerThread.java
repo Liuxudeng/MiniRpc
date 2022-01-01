@@ -2,6 +2,7 @@ package com.mini.rpc.server;
 
 import com.mini.rpc.entity.RpcRequest;
 import com.mini.rpc.entity.RpcResponse;
+import com.mini.rpc.registry.ServiceRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,18 +13,24 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.Socket;
 
+/**
+ * 处理客户端rpcrequest的工作线程
+ */
 
 public class WorkerThread implements Runnable{
 
     //日志文件
     private static final Logger logger = LoggerFactory.getLogger(WorkerThread.class);
 
+    //三个变量
+
     private Socket socket;
     private Object service;
 
+
     public WorkerThread(Socket socket,Object service){
         this.socket = socket;
-        this.service = service;
+
 
     }
 
