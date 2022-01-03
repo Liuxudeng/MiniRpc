@@ -1,8 +1,7 @@
 package com.mini.rpc;
 
 import com.mini.rpc.entity.RpcRequest;
-import com.mini.rpc.entity.RpcResponse;
-import com.mini.rpc.enumeration.ResponseCode;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,11 +32,13 @@ public class RequestHandler {
 
 
     private Object invokeTargetMethod(RpcRequest rpcRequest,Object service) throws InvocationTargetException, IllegalAccessException {
-        Method method;
+        Method method = null;
         try{
             method = service.getClass().getMethod(rpcRequest.getMethodName(),rpcRequest.getParamTypes());
         }catch (NoSuchMethodException e){
-            return RpcResponse.fail(ResponseCode.CLASS_NOT_FOUND);
+         //   return RpcResponse.fail(ResponseCode.CLASS_NOT_FOUND);
+
+            logger.info("调用或发送时有错误发生："+e);
         }
         return method.invoke(service, rpcRequest.getParameters());
     }
