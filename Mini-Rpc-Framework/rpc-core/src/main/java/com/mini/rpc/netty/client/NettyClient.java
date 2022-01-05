@@ -6,6 +6,7 @@ import com.mini.rpc.codec.CommonDecoder;
 import com.mini.rpc.codec.CommonEncoder;
 import com.mini.rpc.entity.RpcRequest;
 import com.mini.rpc.entity.RpcResponse;
+import com.mini.rpc.serializer.HessianSerializer;
 import com.mini.rpc.serializer.JsonSerializer;
 import com.mini.rpc.serializer.KryoSerializer;
 import io.netty.bootstrap.Bootstrap;
@@ -55,7 +56,11 @@ public class NettyClient implements RpcClient {
                                 /**
                                  * kryo序列化
                                  */
-                                .addLast(new CommonEncoder(new KryoSerializer()))
+                              //  .addLast(new CommonEncoder(new KryoSerializer()))
+                                /**
+                                 * hessian序列化
+                                 */
+                                .addLast(new CommonEncoder(new HessianSerializer()))
                                 .addLast(new NettyClientHandler());
                     }
                 });

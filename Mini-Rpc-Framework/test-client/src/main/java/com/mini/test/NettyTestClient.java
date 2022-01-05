@@ -14,7 +14,7 @@ public class NettyTestClient {
 
         RpcClientProxy rpcClientProxy = new RpcClientProxy(client);
         HelloService helloService = rpcClientProxy.getProxy(HelloService.class);
-        HelloObject object = new HelloObject(13,"this is netty style");
+        HelloObject object = new HelloObject(13,"this is hessian_serialize style");
         String res = helloService.hello(object);
         System.out.println(res);
 

@@ -3,6 +3,7 @@ package com.mini.rpc.netty.server;
 import com.mini.rpc.RpcServer;
 import com.mini.rpc.codec.CommonDecoder;
 import com.mini.rpc.codec.CommonEncoder;
+import com.mini.rpc.serializer.HessianSerializer;
 import com.mini.rpc.serializer.JsonSerializer;
 import com.mini.rpc.serializer.KryoSerializer;
 import io.netty.bootstrap.ServerBootstrap;
@@ -72,7 +73,12 @@ public class NettyServer implements RpcServer {
                             /**
                              * kryo序列化
                              */
-                            pipeline.addLast(new CommonEncoder(new KryoSerializer()))
+                           // pipeline.addLast(new CommonEncoder(new KryoSerializer()))
+                            /**
+                             * hessian序列化
+                             */
+                            pipeline.addLast(new CommonEncoder(new HessianSerializer()))
+
                                     .addLast(new CommonDecoder())
                                     .addLast(new NettyServerHandler());
 
