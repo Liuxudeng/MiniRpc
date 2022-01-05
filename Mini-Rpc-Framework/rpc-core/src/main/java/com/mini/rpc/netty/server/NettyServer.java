@@ -4,6 +4,7 @@ import com.mini.rpc.RpcServer;
 import com.mini.rpc.codec.CommonDecoder;
 import com.mini.rpc.codec.CommonEncoder;
 import com.mini.rpc.serializer.JsonSerializer;
+import com.mini.rpc.serializer.KryoSerializer;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -51,6 +52,11 @@ public class NettyServer implements RpcServer {
                     //配置Channel参数 nodelay没有延迟 true就代表禁用Nagle算法 减小传输延迟
                     .childOption(ChannelOption.TCP_NODELAY,true)
                     //初始化Handler 设置Handle操作
+
+                    /**
+                     * 注意一下 在NettyServer端用的是childHandler来初始化handler的，childHandler在客户端连接成功connect
+                     * 后才执行，而handler在初始化时就会执行
+                     */
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         @Override
                         protected void initChannel(SocketChannel ch) throws Exception {
@@ -58,7 +64,15 @@ public class NettyServer implements RpcServer {
                             ChannelPipeline pipeline = ch.pipeline();
                             //往管道中添加Handler，注意入站Handler与出站Handler都必须按实际执行顺序添加，比如先解码再Server处理，那Decoder()就要放在前面。
                             //但入站和出站Handler之间则互不影响，这里我就是先添加的出站Handler再添加的入站
-                            pipeline.addLast(new CommonEncoder(new JsonSerializer()))
+
+                            /**
+                             * json序列化
+                             */
+                          //  pipeline.addLast(new CommonEncoder(new JsonSerializer()))
+                            /**
+                             * kryo序列化
+                             */
+                            pipeline.addLast(new CommonEncoder(new KryoSerializer()))
                                     .addLast(new CommonDecoder())
                                     .addLast(new NettyServerHandler());
 
@@ -66,10 +80,14 @@ public class NettyServer implements RpcServer {
                         }
                     });
 
-            //绑定端口 启动Netty sync()代表阻塞主线程Server线程
+            //绑定端口 启动Netty
             //以执行Netty线程，如果不阻塞Netty就直接被下面shutdown了
 
+            //serverBootstrap.bind(port)就是绑定端口，sync()是同步方法 这里代表阻塞主线程Server线程
+
             ChannelFuture future = serverBootstrap.bind(port).sync();
+
+            //通过ChannelFuture可以获取到Channel，从而利用Channel在通道上进行读、写、关闭等操作；
             //等确定通道关闭了，关闭future回到主Server线程
             future.channel().closeFuture().sync();
         }catch (InterruptedException e){

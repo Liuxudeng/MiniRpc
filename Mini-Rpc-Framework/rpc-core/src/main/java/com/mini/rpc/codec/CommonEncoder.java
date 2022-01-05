@@ -22,6 +22,12 @@ public class CommonEncoder extends MessageToByteEncoder {
 
     @Override
     protected void encode(ChannelHandlerContext ctx, Object msg, ByteBuf out) throws Exception {
+        /**
+         * 解码方法这里读入数据的顺序和写入数据的顺序是一样的
+         * 先读取魔数 再读取package type 再读取序列器序号 再读取消息数据长度 再读取消息数组
+         */
+
+
         //数据写到缓冲区
         out.writeInt(MAGIC_NUMBER);
 

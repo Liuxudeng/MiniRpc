@@ -10,7 +10,7 @@ import com.mini.rpc.netty.client.NettyClient;
  */
 public class NettyTestClient {
     public static void main(String[] args) {
-        NettyClient client = new NettyClient("127.0.0.1", 9998);
+        NettyClient client = new NettyClient("127.0.0.1", 9997);
 
         RpcClientProxy rpcClientProxy = new RpcClientProxy(client);
         HelloService helloService = rpcClientProxy.getProxy(HelloService.class);

@@ -44,6 +44,8 @@ public class JsonSerializer implements CommonSerializer {
         /**
          * 反序列化是将json转化为java对象 因为之前序列化的时候规定了序列化后为byte数组 因此这里的反序列化
          * 是针对byte数组的
+         *
+         *
          */
 
         try {
@@ -51,6 +53,7 @@ public class JsonSerializer implements CommonSerializer {
 
             //如果反序列化后的java对象是RpcRequest类的实例，那么就执行handleRequest()方法
             if(obj instanceof RpcRequest){
+                //handlerequest是用来辅助反序列化的
                 obj = handleRequest(obj);
             }
 

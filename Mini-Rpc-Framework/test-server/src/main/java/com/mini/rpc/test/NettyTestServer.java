@@ -16,6 +16,6 @@ public class NettyTestServer {
         registry.register(helloService);
 
         NettyServer server = new NettyServer();
-        server.start(9998);
+        server.start(9997);
     }
 }

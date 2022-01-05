@@ -30,6 +30,13 @@ public class CommonDecoder extends ReplayingDecoder {
      */
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
+        /**
+         * 注意这里写入数据的过程
+         *
+         * 先是写入MAGIC_NUMBER 再写入package type再写入序列化器编号 再写入传输消息数组的长度 最后写入具体的消息字节数组
+         */
+
+
         //从缓冲区读取数据
 
         int magic = in.readInt();

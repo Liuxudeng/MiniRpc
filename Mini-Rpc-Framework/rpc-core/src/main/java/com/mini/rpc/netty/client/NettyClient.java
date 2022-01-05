@@ -7,6 +7,7 @@ import com.mini.rpc.codec.CommonEncoder;
 import com.mini.rpc.entity.RpcRequest;
 import com.mini.rpc.entity.RpcResponse;
 import com.mini.rpc.serializer.JsonSerializer;
+import com.mini.rpc.serializer.KryoSerializer;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -34,15 +35,27 @@ public class NettyClient implements RpcClient {
     static {
         EventLoopGroup group = new NioEventLoopGroup();
         bootstrap = new Bootstrap();
+        //将线程池初始化到启动器中
         bootstrap.group(group)
+                //设置服务端通道类型
                 .channel(NioSocketChannel.class)
+                //启用该功能时，TCP会主动探测空闲连接的有效性。可以将此功能视为TCP的心跳机制，默认的心跳间隔是7200s即2小时。
                 .option(ChannelOption.SO_KEEPALIVE,true)
+                //初始化handler 设置Handler操作
                 .handler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     protected void initChannel(SocketChannel ch) throws Exception {
                         ChannelPipeline pipeline = ch.pipeline();
                         pipeline.addLast(new CommonDecoder())
-                                .addLast(new CommonEncoder(new JsonSerializer()))
+                                /**
+                                 * json序列化
+                                 */
+                            //    .addLast(new CommonEncoder(new JsonSerializer()))
+
+                                /**
+                                 * kryo序列化
+                                 */
+                                .addLast(new CommonEncoder(new KryoSerializer()))
                                 .addLast(new NettyClientHandler());
                     }
                 });

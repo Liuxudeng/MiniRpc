@@ -1,7 +1,7 @@
 package com.mini.rpc.serializer;
 
 
-
+import com.esotericsoftware.kryo.KryoSerializable;
 
 /**
  * 定义通用序列化接口
@@ -15,6 +15,9 @@ public interface CommonSerializer {
 
     static CommonSerializer getByCode(int code){
         switch (code){
+            case 0:
+                return new KryoSerializer();
+
             case 1:
                 return new JsonSerializer();
             default:
