@@ -44,5 +44,11 @@ public class RpcRequest implements Serializable {
     private Class<?>[] paramTypes;
 
 
+    /**
+     * 请求号
+     */
+
+    private String requestId;
+
 
 }

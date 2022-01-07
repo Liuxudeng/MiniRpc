@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.UUID;
 
 public class RpcClientProxy implements InvocationHandler {
 
@@ -44,7 +45,7 @@ public class RpcClientProxy implements InvocationHandler {
      * @throws Throwable
      */
     @Override
-    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+    public Object invoke(Object proxy, Method method, Object[] args) {
         /**
          * 注意：这里的interfaceName methodName parameters paramTypes都是客户端要发送出去的信息
          *
@@ -64,8 +65,11 @@ public class RpcClientProxy implements InvocationHandler {
       //  return ((RpcResponse)rpcClient.sendRequest(rpcRequest, host, port)).getData();
 
     logger.info("调用方法：{}#{}", method.getDeclaringClass().getName(), method.getName());
-    RpcRequest rpcRequest = new RpcRequest(method.getDeclaringClass().getName(),
-            method.getName(), args, method.getParameterTypes());
+ //   RpcRequest rpcRequest = new RpcRequest(method.getDeclaringClass().getName(),
+
+        //注意这里RpcRequest参数的参数的数据要和原始接口中的数据保持一致
+        RpcRequest rpcRequest = new RpcRequest(method.getDeclaringClass().getName(),
+            method.getName(), args, method.getParameterTypes(),UUID.randomUUID().toString());
     return client.sendRequest(rpcRequest);
 
 }

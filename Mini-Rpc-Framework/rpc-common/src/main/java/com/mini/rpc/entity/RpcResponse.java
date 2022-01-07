@@ -18,6 +18,13 @@ import java.io.Serializable;
 @Data
 public class RpcResponse <T> implements Serializable {
     /**
+     * 响应对应的请求号
+     */
+
+    private String requestId;
+
+
+    /**
      * 响应状态码
      */
 
@@ -44,8 +51,9 @@ public class RpcResponse <T> implements Serializable {
      * @return  返回响应成功的数据
      */
 
-    public static <T> RpcResponse<T> success(T data){
+    public static <T> RpcResponse<T> success(T data,String requestId){
         RpcResponse<T> response = new RpcResponse<>();
+        response.setRequestId(requestId);
         response.setStatusCode(ResponseCode.SUCCESS.getCode());
 
         response.setData(data);
@@ -59,8 +67,10 @@ public class RpcResponse <T> implements Serializable {
      * @param <T>  返回的信息
      * @return  失败时返回的信息
      */
-    public static <T> RpcResponse<T> fail(ResponseCode code){
+    public static <T> RpcResponse<T> fail(ResponseCode code,String requestId){
         RpcResponse<T> response = new RpcResponse<>();
+
+        response.setRequestId(requestId);
         response.setStatusCode(code.getCode());
 
         response.setMessage(code.getMessage());

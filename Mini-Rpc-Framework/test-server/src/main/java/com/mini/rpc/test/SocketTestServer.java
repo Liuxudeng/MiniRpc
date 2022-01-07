@@ -3,6 +3,7 @@ package com.mini.rpc.test;
 import com.mini.rpc.api.HelloService;
 import com.mini.rpc.registry.DefaultServiceRegistry;
 
+import com.mini.rpc.serializer.HessianSerializer;
 import com.mini.rpc.socket.server.SocketServer;
 
 public class SocketTestServer {
@@ -19,7 +20,9 @@ public class SocketTestServer {
 
         SocketServer socketServer = new SocketServer(serviceRegistry);
 
-        socketServer.start(9000);
+        socketServer.setSerializer(new HessianSerializer());
+
+        socketServer.start(9999);
 
 
 

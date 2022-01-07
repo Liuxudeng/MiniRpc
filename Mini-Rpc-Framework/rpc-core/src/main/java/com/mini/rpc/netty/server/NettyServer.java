@@ -3,6 +3,7 @@ package com.mini.rpc.netty.server;
 import com.mini.rpc.RpcServer;
 import com.mini.rpc.codec.CommonDecoder;
 import com.mini.rpc.codec.CommonEncoder;
+import com.mini.rpc.serializer.CommonSerializer;
 import com.mini.rpc.serializer.HessianSerializer;
 import com.mini.rpc.serializer.JsonSerializer;
 import com.mini.rpc.serializer.KryoSerializer;
@@ -21,6 +22,7 @@ public class NettyServer implements RpcServer {
      * 打印日志
      */
     private static final Logger logger = LoggerFactory.getLogger(NettyServer.class);
+    private CommonSerializer serializer;
 
     @Override
     public void start(int port) {
@@ -77,8 +79,12 @@ public class NettyServer implements RpcServer {
                             /**
                              * hessian序列化
                              */
-                            pipeline.addLast(new CommonEncoder(new HessianSerializer()))
+                        //
 
+                            /**
+                             * 将socket序列化
+                             */
+                            pipeline.addLast(new CommonEncoder(serializer))
                                     .addLast(new CommonDecoder())
                                     .addLast(new NettyServerHandler());
 
@@ -104,5 +110,10 @@ public class NettyServer implements RpcServer {
             workergroup.shutdownGracefully();
         }
 
+    }
+
+    @Override
+    public void setSerializer(CommonSerializer serializer) {
+        this.serializer = serializer;
     }
 }

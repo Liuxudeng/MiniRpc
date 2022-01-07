@@ -1,22 +1,26 @@
 package com.mini.rpc.socket.client;
 
+
 import com.mini.rpc.RpcClient;
 import com.mini.rpc.entity.RpcRequest;
 import com.mini.rpc.entity.RpcResponse;
 import com.mini.rpc.enumeration.ResponseCode;
 import com.mini.rpc.enumeration.RpcError;
 import com.mini.rpc.exception.RpcException;
+import com.mini.rpc.serializer.CommonSerializer;
+import com.mini.rpc.socket.util.ObjectReader;
+import com.mini.rpc.socket.util.ObjectWriter;
+import com.mini.rpc.util.RpcMessageChecker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.net.Socket;
 
 public class SocketClient implements RpcClient {
     private static final Logger logger = LoggerFactory.getLogger(SocketClient.class);
 
+    private CommonSerializer serializer;
 
     private final String host;
     private final int port;
@@ -28,6 +32,14 @@ public class SocketClient implements RpcClient {
 
     @Override
     public Object sendRequest(RpcRequest rpcRequest) {
+        /**
+         * 先判断是否设置了序列化器
+         */
+
+        if(serializer==null){
+            logger.error("未设置序列化器");
+            throw new RpcException(RpcError.SERIALIZER_NOT_FOUND);
+        }
 
 
         /**
@@ -50,33 +62,41 @@ public class SocketClient implements RpcClient {
              *
              */
 
-            ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
-            ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());
-            //将要传递的信息写入objectOutputStream对象
-            objectOutputStream.writeObject(rpcRequest);
-            objectOutputStream.flush();
+//            ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
+//            ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());
+//            //将要传递的信息写入objectOutputStream对象
+//            objectOutputStream.writeObject(rpcRequest);
+//            objectOutputStream.flush();
+//
+//            RpcResponse rpcResponse = (RpcResponse) objectInputStream.readObject();
+            OutputStream outputStream = socket.getOutputStream();
+            InputStream inputStream = socket.getInputStream();
 
-            RpcResponse rpcResponse = (RpcResponse) objectInputStream.readObject();
-            if (rpcResponse == null) {
-                logger.error("服务调用失败，service:{}" + rpcRequest.getInterfaceName());
-                throw new RpcException(RpcError.SERVICE_INVOCATION_FAILURE, "service:" + rpcRequest.getInterfaceName());
-            }
-            if (rpcResponse.getStatusCode() == null || rpcResponse.getStatusCode() != ResponseCode.SUCCESS.getCode()) {
-                logger.error("服务调用失败，service:{} response:{}", rpcRequest.getInterfaceName(), rpcResponse);
-                throw new RpcException(RpcError.SERVICE_INVOCATION_FAILURE, "service:" + rpcRequest.getInterfaceName());
-            }
+            ObjectWriter.writeObject(outputStream,rpcRequest,serializer);
+
+            Object obj = ObjectReader.readObject(inputStream);
+            RpcResponse rpcResponse = (RpcResponse) obj;
+
+
+            RpcMessageChecker.check(rpcRequest,rpcResponse);
+
             return rpcResponse.getData();
 
 
             //读到inputStream接收的消息
             // return objectInputStream.readObject();
-        } catch (IOException | ClassNotFoundException e) {
+        } catch (IOException e) {
             logger.error("调用时有错误发生：" + e);
             //   return null;
 
             throw new RpcException("服务调用失败：", e);
         }
 
+    }
+
+    @Override
+    public void setSerializer(CommonSerializer serializer) {
+        this.serializer = serializer;
     }
 
 }

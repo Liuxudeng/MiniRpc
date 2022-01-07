@@ -3,6 +3,7 @@ package com.mini.rpc.socket.server;
 import com.mini.rpc.RequestHandler;
 import com.mini.rpc.RpcServer;
 import com.mini.rpc.registry.ServiceRegistry;
+import com.mini.rpc.serializer.CommonSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,7 +16,7 @@ import java.util.concurrent.*;
  * 服务端实现反射调用
  */
 public class SocketServer implements RpcServer {
-    private final ExecutorService threadPool;
+
     //设置日志
     private static final Logger logger = LoggerFactory.getLogger(SocketServer.class);
 
@@ -29,8 +30,9 @@ public class SocketServer implements RpcServer {
 
 
     private RequestHandler requestHandler = new RequestHandler();
-
+    private final ExecutorService threadPool;
     private final ServiceRegistry serviceRegistry;
+    private CommonSerializer serializer;
 
 
     public SocketServer(ServiceRegistry serviceRegistry) {
@@ -73,7 +75,7 @@ public class SocketServer implements RpcServer {
 
                 while ((socket = serverSocket.accept()) != null) {
                     logger.info("客户端连接！{}:{}", socket.getInetAddress().getHostAddress(), socket.getPort());
-                    threadPool.execute(new RequestHandlerThread(socket, requestHandler, serviceRegistry));
+                    threadPool.execute(new RequestHandlerThread(socket, requestHandler, serviceRegistry,serializer));
                 }
                 threadPool.shutdown();
             } catch (IOException e) {
@@ -84,6 +86,11 @@ public class SocketServer implements RpcServer {
 
 
 
+    }
+
+    @Override
+    public void setSerializer(CommonSerializer serializer) {
+        this.serializer = serializer;
     }
 
 }
