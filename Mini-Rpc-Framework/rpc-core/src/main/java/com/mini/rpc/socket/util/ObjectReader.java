@@ -81,14 +81,15 @@ public class ObjectReader {
 
 
     /**
-     * 将字节数组转换成Int
+     * 将字节数组转换成Int  改变Socket方式数据传输的端序，使其与Netty保持一致
      */
 
     private static int bytesToInt(byte[] src) {
         int value;
-        value = (src[0] & 0XFF) | ((src[1] & 0xFF) << 8)
-                | ((src[2] & 0xFF) << 16)
-                | ((src[3] & 0xFF) << 24);
+        value = ((src[0] & 0xFF) << 24)
+                |((src[1] & 0xFF) << 16)
+                |((src[2] & 0xFF) << 8)
+                |(src[3] & 0xFF);
 
         return value;
     }

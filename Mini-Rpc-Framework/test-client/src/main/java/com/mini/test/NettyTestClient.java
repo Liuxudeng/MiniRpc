@@ -12,7 +12,7 @@ import com.mini.rpc.serializer.KryoSerializer;
  */
 public class NettyTestClient {
     public static void main(String[] args) {
-        NettyClient client = new NettyClient("127.0.0.1", 9997);
+        NettyClient client = new NettyClient("127.0.0.1", 9919);
 
         client.setSerializer(new KryoSerializer());
 

@@ -19,6 +19,6 @@ public class NettyTestServer {
         NettyServer server = new NettyServer();
 
         server.setSerializer(new KryoSerializer());
-        server.start(9999);
+        server.start(9919);
     }
 }

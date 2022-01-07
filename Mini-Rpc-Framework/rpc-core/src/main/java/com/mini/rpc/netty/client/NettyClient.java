@@ -22,6 +22,9 @@ import io.netty.util.AttributeKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.InetSocketAddress;
+import java.util.concurrent.atomic.AtomicReference;
+
 public class NettyClient implements RpcClient {
     //打印日志
     private static final Logger logger = LoggerFactory.getLogger(NettyClient.class);
@@ -32,47 +35,47 @@ public class NettyClient implements RpcClient {
 
     private String host;
     private int port;
-    private static final Bootstrap bootstrap;
+  //  private static final Bootstrap bootstrap;
 
     public NettyClient(String host, int port){
         this.host = host;
         this.port = port;
     }
 
-    static {
-        EventLoopGroup group = new NioEventLoopGroup();
-        bootstrap = new Bootstrap();
-        //将线程池初始化到启动器中
-        bootstrap.group(group)
-                //设置服务端通道类型
-                .channel(NioSocketChannel.class)
-//                //启用该功能时，TCP会主动探测空闲连接的有效性。可以将此功能视为TCP的心跳机制，默认的心跳间隔是7200s即2小时。
-//                .option(ChannelOption.SO_KEEPALIVE,true)
-//                //初始化handler 设置Handler操作
-//                .handler(new ChannelInitializer<SocketChannel>() {
-//                    @Override
-//                    protected void initChannel(SocketChannel ch) throws Exception {
-//                        ChannelPipeline pipeline = ch.pipeline();
-//                        pipeline.addLast(new CommonDecoder())
-//                                /**
-//                                 * json序列化
-//                                 */
-//                            //    .addLast(new CommonEncoder(new JsonSerializer()))
+//    static {
+//        EventLoopGroup group = new NioEventLoopGroup();
+//        bootstrap = new Bootstrap();
+//        //将线程池初始化到启动器中
+//        bootstrap.group(group)
+//                //设置服务端通道类型
+//                .channel(NioSocketChannel.class)
+////                //启用该功能时，TCP会主动探测空闲连接的有效性。可以将此功能视为TCP的心跳机制，默认的心跳间隔是7200s即2小时。
+////                .option(ChannelOption.SO_KEEPALIVE,true)
+////                //初始化handler 设置Handler操作
+////                .handler(new ChannelInitializer<SocketChannel>() {
+////                    @Override
+////                    protected void initChannel(SocketChannel ch) throws Exception {
+////                        ChannelPipeline pipeline = ch.pipeline();
+////                        pipeline.addLast(new CommonDecoder())
+////                                /**
+////                                 * json序列化
+////                                 */
+////                            //    .addLast(new CommonEncoder(new JsonSerializer()))
+////
+////                                /**
+////                                 * kryo序列化
+////                                 */
+////                              //  .addLast(new CommonEncoder(new KryoSerializer()))
+////                                /**
+////                                 * hessian序列化
+////                                 */
+////                                .addLast(new CommonEncoder(new HessianSerializer()))
+////                                .addLast(new NettyClientHandler());
+////                    }
+////                });
+//                .option(ChannelOption.SO_KEEPALIVE,true);
 //
-//                                /**
-//                                 * kryo序列化
-//                                 */
-//                              //  .addLast(new CommonEncoder(new KryoSerializer()))
-//                                /**
-//                                 * hessian序列化
-//                                 */
-//                                .addLast(new CommonEncoder(new HessianSerializer()))
-//                                .addLast(new NettyClientHandler());
-//                    }
-//                });
-                .option(ChannelOption.SO_KEEPALIVE,true);
-
-    }
+//    }
 
 
 
@@ -84,26 +87,31 @@ public class NettyClient implements RpcClient {
             throw new RpcException(RpcError.SERIALIZER_NOT_FOUND);
         }
 
-        bootstrap.handler(new ChannelInitializer<SocketChannel>() {
-            @Override
-            protected void initChannel(SocketChannel ch) throws Exception {
-                ChannelPipeline pipeline = ch.pipeline();
-                pipeline.addLast(new CommonDecoder())
-                        .addLast(new CommonEncoder(serializer))
-                        .addLast(new NettyClientHandler());
-            }
-        });
+//        bootstrap.handler(new ChannelInitializer<SocketChannel>() {
+//            @Override
+//            protected void initChannel(SocketChannel ch) throws Exception {
+//                ChannelPipeline pipeline = ch.pipeline();
+//                pipeline.addLast(new CommonDecoder())
+//                        .addLast(new CommonEncoder(serializer))
+//                        .addLast(new NettyClientHandler());
+//            }
+//        });
+
+        AtomicReference<Object> result = new AtomicReference<>(null);
 
 
 
 
            try {
-               ChannelFuture future = bootstrap.connect(host,port).sync();
-               logger.info("客户端连接到服务端{}:{}",host,port);
 
-
-               Channel channel = future.channel();
-               if(channel!=null){
+               Channel channel = ChannelProvider.get(new InetSocketAddress(host,port),serializer);
+               if(channel.isActive()){
+//               ChannelFuture future = bootstrap.connect(host,port).sync();
+//               logger.info("客户端连接到服务端{}:{}",host,port);
+//
+//
+//               Channel channel = future.channel();
+//               if(channel!=null){
                    //向服务端发请求 并设置监听
                    // 关于writeAndFlush()的具体实现可以参考：https://blog.csdn.net/qq_34436819/article/details/103937188
 
@@ -122,7 +130,9 @@ public class NettyClient implements RpcClient {
                    //get()阻塞获取value
                    RpcResponse rpcResponse = channel.attr(key).get();
                    RpcMessageChecker.check(rpcRequest, rpcResponse);
-                   return rpcResponse.getData();
+                  // return rpcResponse.getData();
+
+                   result.set(rpcResponse.getData());
 
                }
 
@@ -132,7 +142,7 @@ public class NettyClient implements RpcClient {
            }
 
 
-           return null;
+           return result.get();
 
 
     }
