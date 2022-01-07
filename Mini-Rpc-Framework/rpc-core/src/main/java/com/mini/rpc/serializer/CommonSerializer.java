@@ -2,6 +2,7 @@ package com.mini.rpc.serializer;
 
 
 import com.esotericsoftware.kryo.KryoSerializable;
+import io.protostuff.ProtostuffException;
 
 /**
  * 定义通用序列化接口
@@ -22,6 +23,8 @@ public interface CommonSerializer {
                 return new JsonSerializer();
             case 2:
                 return new HessianSerializer();
+            case 3:
+                return new ProtostuffSerializer();
             default:
                 return null;
         }

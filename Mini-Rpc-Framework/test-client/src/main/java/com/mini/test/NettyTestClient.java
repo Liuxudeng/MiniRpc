@@ -6,6 +6,7 @@ import com.mini.rpc.api.HelloService;
 import com.mini.rpc.netty.client.NettyClient;
 import com.mini.rpc.serializer.HessianSerializer;
 import com.mini.rpc.serializer.KryoSerializer;
+import com.mini.rpc.serializer.ProtostuffSerializer;
 
 /**
  * 测试用Netty客户端
@@ -14,7 +15,7 @@ public class NettyTestClient {
     public static void main(String[] args) {
         NettyClient client = new NettyClient("127.0.0.1", 9919);
 
-        client.setSerializer(new KryoSerializer());
+        client.setSerializer(new ProtostuffSerializer());
 
         RpcClientProxy rpcClientProxy = new RpcClientProxy(client);
         HelloService helloService = rpcClientProxy.getProxy(HelloService.class);

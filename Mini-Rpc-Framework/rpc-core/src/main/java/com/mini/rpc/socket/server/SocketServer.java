@@ -4,6 +4,7 @@ import com.mini.rpc.RequestHandler;
 import com.mini.rpc.RpcServer;
 import com.mini.rpc.registry.ServiceRegistry;
 import com.mini.rpc.serializer.CommonSerializer;
+import com.mini.rpc.util.ThreadPoolFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,13 +21,13 @@ public class SocketServer implements RpcServer {
     //设置日志
     private static final Logger logger = LoggerFactory.getLogger(SocketServer.class);
 
-    /**
-     * 线程池相关
-     */
-    private static final int CORE_POOL_SIZE = 5;
-    private static final int MAXMIUM_POOL_SIZE = 50;
-    private static final int KEEP_ALIVE_TIME = 60;
-    private static final int BLOCKING_QUEUE_CAPACITY = 100;
+//    /**
+//     * 线程池相关
+//     */
+//    private static final int CORE_POOL_SIZE = 5;
+//    private static final int MAXMIUM_POOL_SIZE = 50;
+//    private static final int KEEP_ALIVE_TIME = 60;
+//    private static final int BLOCKING_QUEUE_CAPACITY = 100;
 
 
     private RequestHandler requestHandler = new RequestHandler();
@@ -52,15 +53,18 @@ public class SocketServer implements RpcServer {
          * 设置上限为100个线程的阻塞队列
          */
 
-        BlockingQueue<Runnable> workingQueue = new ArrayBlockingQueue<>(BLOCKING_QUEUE_CAPACITY);
-        ThreadFactory threadFactory = Executors.defaultThreadFactory();
+//        BlockingQueue<Runnable> workingQueue = new ArrayBlockingQueue<>(BLOCKING_QUEUE_CAPACITY);
+//        ThreadFactory threadFactory = Executors.defaultThreadFactory();
+//
+//        /**
+//         * 创建线程实例
+//         */
+//
+//        threadPool = new ThreadPoolExecutor(CORE_POOL_SIZE, MAXMIUM_POOL_SIZE,
+//                KEEP_ALIVE_TIME, TimeUnit.SECONDS, workingQueue, threadFactory);
 
-        /**
-         * 创建线程实例
-         */
-
-        threadPool = new ThreadPoolExecutor(CORE_POOL_SIZE, MAXMIUM_POOL_SIZE,
-                KEEP_ALIVE_TIME, TimeUnit.SECONDS, workingQueue, threadFactory);
+        //创建线程池
+        threadPool = ThreadPoolFactory.createDefaultThreadPool("socket-rpc-server");
     }
     /**
      * 注册服务

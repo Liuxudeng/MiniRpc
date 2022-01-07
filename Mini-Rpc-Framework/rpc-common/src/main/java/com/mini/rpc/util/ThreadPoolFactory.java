@@ -3,9 +3,10 @@ package com.mini.rpc.util;
 
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import lombok.NoArgsConstructor;
 
 import java.util.concurrent.*;
-
+@NoArgsConstructor
 public class ThreadPoolFactory {
 
     /**
@@ -19,10 +20,7 @@ public class ThreadPoolFactory {
     private static final int BLOCKING_QUEUE_CAPACITY = 100;
 
 
-    //无参构造方法
-    private ThreadPoolFactory(){
 
-    }
 
     public static ExecutorService createDefaultThreadPool(String threadNamePrefix){
         return createDefaultThreadPool(threadNamePrefix,false);

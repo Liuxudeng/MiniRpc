@@ -4,6 +4,7 @@ import com.mini.rpc.netty.server.NettyServer;
 import com.mini.rpc.registry.DefaultServiceRegistry;
 import com.mini.rpc.registry.ServiceRegistry;
 import com.mini.rpc.serializer.KryoSerializer;
+import com.mini.rpc.serializer.ProtostuffSerializer;
 
 /**
  * 测试用Netty服务端
@@ -18,7 +19,7 @@ public class NettyTestServer {
 
         NettyServer server = new NettyServer();
 
-        server.setSerializer(new KryoSerializer());
+        server.setSerializer(new ProtostuffSerializer());
         server.start(9919);
     }
 }
