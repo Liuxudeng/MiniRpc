@@ -1,4 +1,4 @@
-package com.mini.rpc;
+package com.mini.rpc.transport;
 
 import com.mini.rpc.entity.RpcRequest;
 import com.mini.rpc.serializer.CommonSerializer;

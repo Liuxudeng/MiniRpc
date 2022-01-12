@@ -1,23 +1,15 @@
-package com.mini.rpc.netty.client;
+package com.mini.rpc.transport.netty.client;
 
-import com.fasterxml.jackson.databind.JsonSerializable;
-import com.mini.rpc.RpcClient;
-import com.mini.rpc.codec.CommonDecoder;
-import com.mini.rpc.codec.CommonEncoder;
+import com.mini.rpc.transport.RpcClient;
 import com.mini.rpc.entity.RpcRequest;
 import com.mini.rpc.entity.RpcResponse;
 import com.mini.rpc.enumeration.RpcError;
 import com.mini.rpc.exception.RpcException;
+import com.mini.rpc.registry.NacosServiceRegistry;
+import com.mini.rpc.registry.ServiceRegistry;
 import com.mini.rpc.serializer.CommonSerializer;
-import com.mini.rpc.serializer.HessianSerializer;
-import com.mini.rpc.serializer.JsonSerializer;
-import com.mini.rpc.serializer.KryoSerializer;
 import com.mini.rpc.util.RpcMessageChecker;
-import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
-import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.SocketChannel;
-import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.util.AttributeKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,53 +21,17 @@ public class NettyClient implements RpcClient {
     //打印日志
     private static final Logger logger = LoggerFactory.getLogger(NettyClient.class);
 
+    private final ServiceRegistry serviceRegistry;
 
     private CommonSerializer serializer;
     //地址以及端口号
 
-    private String host;
-    private int port;
+
   //  private static final Bootstrap bootstrap;
 
-    public NettyClient(String host, int port){
-        this.host = host;
-        this.port = port;
-    }
-
-//    static {
-//        EventLoopGroup group = new NioEventLoopGroup();
-//        bootstrap = new Bootstrap();
-//        //将线程池初始化到启动器中
-//        bootstrap.group(group)
-//                //设置服务端通道类型
-//                .channel(NioSocketChannel.class)
-////                //启用该功能时，TCP会主动探测空闲连接的有效性。可以将此功能视为TCP的心跳机制，默认的心跳间隔是7200s即2小时。
-////                .option(ChannelOption.SO_KEEPALIVE,true)
-////                //初始化handler 设置Handler操作
-////                .handler(new ChannelInitializer<SocketChannel>() {
-////                    @Override
-////                    protected void initChannel(SocketChannel ch) throws Exception {
-////                        ChannelPipeline pipeline = ch.pipeline();
-////                        pipeline.addLast(new CommonDecoder())
-////                                /**
-////                                 * json序列化
-////                                 */
-////                            //    .addLast(new CommonEncoder(new JsonSerializer()))
-////
-////                                /**
-////                                 * kryo序列化
-////                                 */
-////                              //  .addLast(new CommonEncoder(new KryoSerializer()))
-////                                /**
-////                                 * hessian序列化
-////                                 */
-////                                .addLast(new CommonEncoder(new HessianSerializer()))
-////                                .addLast(new NettyClientHandler());
-////                    }
-////                });
-//                .option(ChannelOption.SO_KEEPALIVE,true);
-//
-//    }
+   public NettyClient(){
+       serviceRegistry = new NacosServiceRegistry();
+   }
 
 
 
@@ -104,7 +60,11 @@ public class NettyClient implements RpcClient {
 
            try {
 
-               Channel channel = ChannelProvider.get(new InetSocketAddress(host,port),serializer);
+              //从Nacos获取提供对应服务的服务端地址
+                InetSocketAddress inetSocketAddress = serviceRegistry.lookupService(rpcRequest.getInterfaceName());
+             //创建Netty通道连接
+               Channel channel = ChannelProvider.get(inetSocketAddress,serializer);
+
                if(channel.isActive()){
 //               ChannelFuture future = bootstrap.connect(host,port).sync();
 //               logger.info("客户端连接到服务端{}:{}",host,port);

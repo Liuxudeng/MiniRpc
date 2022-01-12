@@ -1,9 +1,11 @@
-package com.mini.rpc;
+package com.mini.rpc.handler;
 
 import com.mini.rpc.entity.RpcRequest;
 
 import com.mini.rpc.entity.RpcResponse;
 import com.mini.rpc.enumeration.ResponseCode;
+import com.mini.rpc.provider.ServiceProvider;
+import com.mini.rpc.provider.ServiceProviderImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,10 +16,17 @@ public class RequestHandler {
 
     //打印日志
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
-
+    private static final ServiceProvider serviceProvider;
    //handle方法
-    public Object handle(RpcRequest rpcRequest,Object service){
+    static {
+        serviceProvider = new ServiceProviderImpl();
+   }
+
+   public Object handle(RpcRequest rpcRequest){
         Object result = null;
+
+        //从服务端本地注册表获取服务实体
+       Object service = serviceProvider.getServiceProvider(rpcRequest.getInterfaceName());
         try{
             result = invokeTargetMethod(rpcRequest,service);
             logger.info("服务：{}成功调用方法：{}",rpcRequest.getInterfaceName(),rpcRequest.getMethodName());

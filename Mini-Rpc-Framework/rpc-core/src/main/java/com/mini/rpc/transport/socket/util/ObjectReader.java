@@ -1,4 +1,4 @@
-package com.mini.rpc.socket.util;
+package com.mini.rpc.transport.socket.util;
 
 import com.mini.rpc.entity.RpcRequest;
 import com.mini.rpc.entity.RpcResponse;

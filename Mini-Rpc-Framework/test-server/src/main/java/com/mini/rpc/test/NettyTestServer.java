@@ -1,10 +1,8 @@
 package com.mini.rpc.test;
 
-import com.mini.rpc.netty.server.NettyServer;
-import com.mini.rpc.registry.DefaultServiceRegistry;
-import com.mini.rpc.registry.ServiceRegistry;
-import com.mini.rpc.serializer.KryoSerializer;
+import com.mini.rpc.api.HelloService;
 import com.mini.rpc.serializer.ProtostuffSerializer;
+import com.mini.rpc.transport.netty.server.NettyServer;
 
 /**
  * 测试用Netty服务端
@@ -12,14 +10,10 @@ import com.mini.rpc.serializer.ProtostuffSerializer;
 public class NettyTestServer {
 
     public static void main(String[] args) {
-        HelloServiceImpl helloService = new HelloServiceImpl();
-        ServiceRegistry registry = new DefaultServiceRegistry();
+        HelloService helloService = new HelloServiceImpl();
 
-        registry.register(helloService);
-
-        NettyServer server = new NettyServer();
-
+        NettyServer server = new NettyServer("127.0.0.1", 9999);
         server.setSerializer(new ProtostuffSerializer());
-        server.start(9919);
+       server.publishService(helloService,HelloService.class);
     }
 }

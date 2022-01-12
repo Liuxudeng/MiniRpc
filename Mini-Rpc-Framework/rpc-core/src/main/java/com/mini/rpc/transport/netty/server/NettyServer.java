@@ -1,12 +1,17 @@
-package com.mini.rpc.netty.server;
+package com.mini.rpc.transport.netty.server;
 
-import com.mini.rpc.RpcServer;
+
 import com.mini.rpc.codec.CommonDecoder;
 import com.mini.rpc.codec.CommonEncoder;
+import com.mini.rpc.enumeration.RpcError;
+import com.mini.rpc.exception.RpcException;
+import com.mini.rpc.provider.ServiceProvider;
+import com.mini.rpc.provider.ServiceProviderImpl;
+import com.mini.rpc.registry.NacosServiceRegistry;
+import com.mini.rpc.registry.ServiceRegistry;
 import com.mini.rpc.serializer.CommonSerializer;
-import com.mini.rpc.serializer.HessianSerializer;
-import com.mini.rpc.serializer.JsonSerializer;
-import com.mini.rpc.serializer.KryoSerializer;
+import com.mini.rpc.transport.RpcServer;
+import com.mini.rpc.transport.netty.client.NettyClientHandler;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -17,15 +22,42 @@ import io.netty.handler.logging.LoggingHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+
+import java.net.InetSocketAddress;
+
 public class NettyServer implements RpcServer {
     /**
      * 打印日志
      */
     private static final Logger logger = LoggerFactory.getLogger(NettyServer.class);
+
+    private final String host;
+    private final int port;
+
+    private final ServiceRegistry serviceRegistry;
+    private final ServiceProvider serviceProvider;
+
+
     private CommonSerializer serializer;
+    public NettyServer(String host, int port) {
+        this.host = host;
+        this.port = port;
+        serviceRegistry = new NacosServiceRegistry();
+        serviceProvider = new ServiceProviderImpl();
+    }
 
     @Override
-    public void start(int port) {
+    public <T> void publishService(Object service, Class<T> serviceClass) {
+        if (serializer == null) {
+            logger.error("未设置序列化器");
+            throw new RpcException(RpcError.SERIALIZER_NOT_FOUND);
+        }
+        serviceProvider.addServiceProvider(service);
+        serviceRegistry.register(serviceClass.getCanonicalName(), new InetSocketAddress(host, port));
+        start();
+    }
+    @Override
+    public void start() {
         /**
          * 首先明确 服务端有两个group 其中bossgroup主要是对客户端的新连接请求进行处理（即OP_ACCEPT事件）
          * WorkGroup中，则负责处理IO读写、编解码、业务逻辑等（即OP_READ事件、OP_WRITE事件）。
@@ -86,7 +118,7 @@ public class NettyServer implements RpcServer {
                              */
                             pipeline.addLast(new CommonEncoder(serializer))
                                     .addLast(new CommonDecoder())
-                                    .addLast(new NettyServerHandler());
+                                    .addLast(new NettyClientHandler());
 
 
                         }
@@ -97,7 +129,7 @@ public class NettyServer implements RpcServer {
 
             //serverBootstrap.bind(port)就是绑定端口，sync()是同步方法 这里代表阻塞主线程Server线程
 
-            ChannelFuture future = serverBootstrap.bind(port).sync();
+            ChannelFuture future = serverBootstrap.bind(host,port).sync();
 
             //通过ChannelFuture可以获取到Channel，从而利用Channel在通道上进行读、写、关闭等操作；
             //等确定通道关闭了，关闭future回到主Server线程

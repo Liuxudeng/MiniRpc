@@ -1,4 +1,4 @@
-package com.mini.rpc.netty.client;
+package com.mini.rpc.transport.netty.client;
 
 import com.mini.rpc.entity.RpcResponse;
 import io.netty.channel.ChannelHandlerContext;
@@ -7,8 +7,6 @@ import io.netty.util.AttributeKey;
 import io.netty.util.ReferenceCountUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.xml.ws.Response;
 
 /**
  * 客户端Netty处理器

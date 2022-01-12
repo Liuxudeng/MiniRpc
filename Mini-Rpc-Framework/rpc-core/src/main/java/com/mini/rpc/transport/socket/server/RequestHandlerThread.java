@@ -1,14 +1,13 @@
-package com.mini.rpc.socket.server;
+package com.mini.rpc.transport.socket.server;
 
 
-import com.mini.rpc.RequestHandler;
+import com.mini.rpc.handler.RequestHandler;
 import com.mini.rpc.registry.ServiceRegistry;
 
 import com.mini.rpc.entity.RpcRequest;
-import com.mini.rpc.entity.RpcResponse;
 import com.mini.rpc.serializer.CommonSerializer;
-import com.mini.rpc.socket.util.ObjectReader;
-import com.mini.rpc.socket.util.ObjectWriter;
+import com.mini.rpc.transport.socket.util.ObjectReader;
+import com.mini.rpc.transport.socket.util.ObjectWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,15 +22,15 @@ public class RequestHandlerThread implements Runnable{
 
     private Socket socket;
     private RequestHandler requestHandler;
-    private ServiceRegistry serviceRegistry;
+
     private CommonSerializer serializer;
 
     public RequestHandlerThread(Socket socket, RequestHandler requestHandler
-            , ServiceRegistry serviceRegistry,CommonSerializer serializer) {
+            ,CommonSerializer serializer) {
         this.socket = socket;
         this.requestHandler = requestHandler;
 
-        this.serviceRegistry = serviceRegistry;
+
         this.serializer = serializer;
     }
 
@@ -40,9 +39,7 @@ public class RequestHandlerThread implements Runnable{
         try(InputStream inputStream = socket.getInputStream();
             OutputStream outputStream = socket.getOutputStream()) {
             RpcRequest rpcRequest = (RpcRequest) ObjectReader.readObject(inputStream);
-            String interfaceName = rpcRequest.getInterfaceName();
-            Object service = serviceRegistry.getService(interfaceName);
-          Object response = requestHandler.handle(rpcRequest,service);
+           Object response = requestHandler.handle(rpcRequest);
             ObjectWriter.writeObject(outputStream, response, serializer);
         }catch (IOException e){
             logger.info("调用或发送时发生错误：" + e);

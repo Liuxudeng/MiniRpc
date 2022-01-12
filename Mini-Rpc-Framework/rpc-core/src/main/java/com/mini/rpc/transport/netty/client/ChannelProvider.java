@@ -1,4 +1,4 @@
-package com.mini.rpc.netty.client;
+package com.mini.rpc.transport.netty.client;
 
 import com.mini.rpc.codec.CommonDecoder;
 import com.mini.rpc.codec.CommonEncoder;

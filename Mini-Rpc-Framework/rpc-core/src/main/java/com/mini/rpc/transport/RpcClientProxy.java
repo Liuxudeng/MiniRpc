@@ -1,8 +1,7 @@
-package com.mini.rpc;
+package com.mini.rpc.transport;
 
 
 import com.mini.rpc.entity.RpcRequest;
-import com.mini.rpc.entity.RpcResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,10 +16,10 @@ public class RpcClientProxy implements InvocationHandler {
     private static final Logger logger = LoggerFactory.getLogger(RpcClientProxy.class);
 
 
-    private final com.mini.rpc.RpcClient client;
+    private final RpcClient client;
 
     //传递host和port来确定服务端的位置
-    public RpcClientProxy(com.mini.rpc.RpcClient client){
+    public RpcClientProxy(RpcClient client){
        this.client = client;
     }
 
