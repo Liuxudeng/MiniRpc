@@ -1,5 +1,7 @@
 package com.mini.rpc.transport.netty.client;
 
+import com.mini.rpc.registry.NacosServiceDiscovery;
+import com.mini.rpc.registry.ServiceDiscovery;
 import com.mini.rpc.transport.RpcClient;
 import com.mini.rpc.entity.RpcRequest;
 import com.mini.rpc.entity.RpcResponse;
@@ -21,7 +23,7 @@ public class NettyClient implements RpcClient {
     //打印日志
     private static final Logger logger = LoggerFactory.getLogger(NettyClient.class);
 
-    private final ServiceRegistry serviceRegistry;
+ private final ServiceDiscovery serviceDiscovery;
 
     private CommonSerializer serializer;
     //地址以及端口号
@@ -30,7 +32,7 @@ public class NettyClient implements RpcClient {
   //  private static final Bootstrap bootstrap;
 
    public NettyClient(){
-       serviceRegistry = new NacosServiceRegistry();
+       serviceDiscovery = new NacosServiceDiscovery();
    }
 
 
@@ -60,12 +62,14 @@ public class NettyClient implements RpcClient {
 
            try {
 
-              //从Nacos获取提供对应服务的服务端地址
-                InetSocketAddress inetSocketAddress = serviceRegistry.lookupService(rpcRequest.getInterfaceName());
-             //创建Netty通道连接
-               Channel channel = ChannelProvider.get(inetSocketAddress,serializer);
+               //从Nacos获取提供对应服务的服务端地址
+               InetSocketAddress inetSocketAddress = serviceDiscovery.lookupService(rpcRequest.getInterfaceName());
 
-               if(channel.isActive()){
+
+               //创建Netty通道连接
+               Channel channel = ChannelProvider.get(inetSocketAddress, serializer);
+
+               if (channel.isActive()) {
 //               ChannelFuture future = bootstrap.connect(host,port).sync();
 //               logger.info("客户端连接到服务端{}:{}",host,port);
 //
@@ -76,30 +80,37 @@ public class NettyClient implements RpcClient {
                    // 关于writeAndFlush()的具体实现可以参考：https://blog.csdn.net/qq_34436819/article/details/103937188
 
                    channel.writeAndFlush(rpcRequest).addListener(future1 -> {
-                      if(future1.isSuccess()){
-                          logger.info(String.format("客户端发送消息：%s",rpcRequest.toString()));
+                       if (future1.isSuccess()) {
+                           logger.info(String.format("客户端发送消息：%s", rpcRequest.toString()));
 
-                      } else{
-                          logger.error("发送消息时有错误发生：",future1.cause());
-                      }
+                       } else {
+                           logger.error("发送消息时有错误发生：", future1.cause());
+                       }
                    });
 
-                   channel.closeFuture().sync();
-                    //AttributeMap<Attribute,AttributeValue>是绑定在Channel上的 可以设置用来获取通道对象
-                   AttributeKey<RpcResponse> key = AttributeKey.valueOf("rpcResponse"+rpcRequest.getRequestId());
+                  channel.closeFuture().sync();
+
+                   //AttributeMap<Attribute,AttributeValue>是绑定在Channel上的 可以设置用来获取通道对象
+                   AttributeKey<RpcResponse> key = AttributeKey.valueOf("rpcResponse" + rpcRequest.getRequestId());
                    //get()阻塞获取value
+
+
                    RpcResponse rpcResponse = channel.attr(key).get();
                    RpcMessageChecker.check(rpcRequest, rpcResponse);
-                  // return rpcResponse.getData();
+                   // return rpcResponse.getData();
 
                    result.set(rpcResponse.getData());
 
+               } else {
+                  // channel.close();
+                   System.exit(0);
                }
 
 
            } catch (InterruptedException e) {
                logger.error("发送消息时有错误发生",e);
            }
+
 
 
            return result.get();

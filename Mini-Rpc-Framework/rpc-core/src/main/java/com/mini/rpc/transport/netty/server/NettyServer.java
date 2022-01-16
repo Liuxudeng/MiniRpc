@@ -47,14 +47,16 @@ public class NettyServer implements RpcServer {
     }
 
     @Override
-    public <T> void publishService(Object service, Class<T> serviceClass) {
+    public <T> void publishService(T service, Class<T> serviceClass) {
         if (serializer == null) {
             logger.error("未设置序列化器");
             throw new RpcException(RpcError.SERIALIZER_NOT_FOUND);
         }
-        serviceProvider.addServiceProvider(service);
+        serviceProvider.addServiceProvider(service,serviceClass);
         serviceRegistry.register(serviceClass.getCanonicalName(), new InetSocketAddress(host, port));
+
         start();
+
     }
     @Override
     public void start() {
@@ -64,10 +66,10 @@ public class NettyServer implements RpcServer {
          */
 
         //用户处理客户端新连接的主"线程池"
-        EventLoopGroup bossgroup = new NioEventLoopGroup();
+        EventLoopGroup bossGroup = new NioEventLoopGroup();
 
         //用于连接后处理IO时间的从"线程池"
-        EventLoopGroup workergroup = new NioEventLoopGroup();
+        EventLoopGroup workerGroup = new NioEventLoopGroup();
 
 
         try{
@@ -75,7 +77,7 @@ public class NettyServer implements RpcServer {
             ServerBootstrap serverBootstrap = new ServerBootstrap();
 
             //将主从线程初始化到启动器中
-            serverBootstrap.group(bossgroup,workergroup)
+            serverBootstrap.group(bossGroup,workerGroup)
                     //设置服务端通道类型
                     .channel(NioServerSocketChannel.class)
                     //日志打印方式
@@ -118,7 +120,7 @@ public class NettyServer implements RpcServer {
                              */
                             pipeline.addLast(new CommonEncoder(serializer))
                                     .addLast(new CommonDecoder())
-                                    .addLast(new NettyClientHandler());
+                                    .addLast(new NettyServerHandler());
 
 
                         }
@@ -138,8 +140,8 @@ public class NettyServer implements RpcServer {
             logger.error("启动服务器时错误发生",e);
         }finally {
             //优雅关闭Netty服务端且清理掉内存
-            bossgroup.shutdownGracefully();
-            workergroup.shutdownGracefully();
+            bossGroup.shutdownGracefully();
+            workerGroup.shutdownGracefully();
         }
 
     }

@@ -1,5 +1,6 @@
 package com.mini.test;
 
+import com.mini.rpc.transport.RpcClient;
 import com.mini.rpc.transport.RpcClientProxy;
 import com.mini.rpc.api.HelloObject;
 import com.mini.rpc.api.HelloService;

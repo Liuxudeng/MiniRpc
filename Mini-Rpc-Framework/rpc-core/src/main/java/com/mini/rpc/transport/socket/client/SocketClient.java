@@ -1,6 +1,8 @@
 package com.mini.rpc.transport.socket.client;
 
 
+import com.mini.rpc.registry.NacosServiceDiscovery;
+import com.mini.rpc.registry.ServiceDiscovery;
 import com.mini.rpc.transport.RpcClient;
 import com.mini.rpc.entity.RpcRequest;
 import com.mini.rpc.entity.RpcResponse;
@@ -23,11 +25,11 @@ public class SocketClient implements RpcClient {
     private static final Logger logger = LoggerFactory.getLogger(SocketClient.class);
 
     private CommonSerializer serializer;
-    private final ServiceRegistry serviceRegistry;
+    private final ServiceDiscovery serviceDiscovery;
 
 
     public SocketClient() {
-        serviceRegistry = new NacosServiceRegistry();
+        serviceDiscovery = new NacosServiceDiscovery();
     }
 
     @Override
@@ -41,7 +43,7 @@ public class SocketClient implements RpcClient {
             throw new RpcException(RpcError.SERIALIZER_NOT_FOUND);
         }
         //从Nacos获取提供对应服务的服务端地址
-        InetSocketAddress inetSocketAddress = serviceRegistry.lookupService(rpcRequest.getInterfaceName());
+        InetSocketAddress inetSocketAddress = serviceDiscovery.lookupService(rpcRequest.getInterfaceName());
 
         /**
          * socket套接字实现TCP网络传输
@@ -89,8 +91,6 @@ public class SocketClient implements RpcClient {
             // return objectInputStream.readObject();
         } catch (IOException e) {
             logger.error("调用时有错误发生：" + e);
-            //   return null;
-
             throw new RpcException("服务调用失败：", e);
         }
 
