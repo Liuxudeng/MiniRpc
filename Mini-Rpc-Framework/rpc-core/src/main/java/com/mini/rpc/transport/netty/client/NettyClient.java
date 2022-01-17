@@ -46,10 +46,14 @@ public class NettyClient implements RpcClient {
   //  private static final Bootstrap bootstrap;
 
    public NettyClient(){
-       serviceDiscovery = new NacosServiceDiscovery();
+       //以默认序列化器调用构造函数
+       this(DEFAULT_SERIALIZER);
    }
 
-
+    public NettyClient(Integer serializerCode){
+        serviceDiscovery = new NacosServiceDiscovery();
+        serializer = CommonSerializer.getByCode(serializerCode);
+    }
 
 
     @Override
@@ -120,9 +124,9 @@ public class NettyClient implements RpcClient {
 
     }
 
-    @Override
-    public void setSerializer(CommonSerializer serializer) {
-        this.serializer = serializer;
-
-    }
+//    @Override
+//    public void setSerializer(CommonSerializer serializer) {
+//        this.serializer = serializer;
+//
+//    }
 }

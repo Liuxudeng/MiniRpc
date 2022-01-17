@@ -1,5 +1,6 @@
 package com.mini.test;
 
+import com.mini.rpc.serializer.CommonSerializer;
 import com.mini.rpc.transport.RpcClient;
 import com.mini.rpc.transport.RpcClientProxy;
 import com.mini.rpc.api.HelloObject;
@@ -13,9 +14,9 @@ public class SocketTestClient {
     public static void main(String[] args) {
         //拿到rerquest
 //        SocketClient client = new SocketClient("127.0.0.1",9999);
-        SocketClient client = new SocketClient();
-        client.setSerializer(new HessianSerializer());
-
+//        SocketClient client = new SocketClient();
+//        client.setSerializer(new HessianSerializer());
+        SocketClient client = new SocketClient(CommonSerializer.KRYO_SERIALIZER);
         //接口与代理对象之间的中介对象
         RpcClientProxy proxy = new RpcClientProxy(client);
         //创建代理对象

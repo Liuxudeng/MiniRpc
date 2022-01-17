@@ -52,11 +52,17 @@ public class SocketServer implements RpcServer {
 
 
         private final ServiceProvider serviceProvider;
-         public SocketServer(String host, int port){
+
+    public SocketServer(String host, int port) {
+        this(host, port, DEFAULT_SERIALIZER);
+    }
+
+         public SocketServer(String host, int port, Integer serializerCode){
             this.host = host;
             this.port = port;
             serviceRegistry = new NacosServiceRegistry();
             serviceProvider = new ServiceProviderImpl();
+             serializer = CommonSerializer.getByCode(serializerCode);
         // this.threadPool = threadPool1;
         /**
          * 设置线程池默认相关
@@ -115,11 +121,11 @@ public class SocketServer implements RpcServer {
 
 
     }
-
-    @Override
-    public void setSerializer(CommonSerializer serializer) {
-        this.serializer = serializer;
-    }
+//
+//    @Override
+//    public void setSerializer(CommonSerializer serializer) {
+//        this.serializer = serializer;
+//    }
 
     /**
      * 将服务保存在本地的注册表，同时注册到Nacos注册中心

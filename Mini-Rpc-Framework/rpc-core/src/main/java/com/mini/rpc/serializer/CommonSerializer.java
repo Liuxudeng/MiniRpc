@@ -8,6 +8,12 @@ import io.protostuff.ProtostuffException;
  * 定义通用序列化接口
  */
 public interface CommonSerializer {
+    Integer KRYO_SERIALIZER = 0;
+    Integer JSON_SERIALIZER = 1;
+    Integer HESSIAN_SERIALIZER = 2;
+    Integer PROTOBUF_SERIALIZER = 3;
+
+
     byte[] serialize(Object obj);
     Object deserialize(byte[] bytes,Class<?> clazz);
 
