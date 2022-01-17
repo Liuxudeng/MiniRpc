@@ -4,6 +4,7 @@ import com.mini.rpc.enumeration.RpcError;
 import com.mini.rpc.exception.RpcException;
 import com.mini.rpc.handler.RequestHandler;
 
+import com.mini.rpc.hook.ShutdownHook;
 import com.mini.rpc.provider.ServiceProvider;
 import com.mini.rpc.provider.ServiceProviderImpl;
 import com.mini.rpc.registry.NacosServiceRegistry;
@@ -11,7 +12,7 @@ import com.mini.rpc.registry.ServiceRegistry;
 import com.mini.rpc.serializer.CommonSerializer;
 
 import com.mini.rpc.transport.RpcServer;
-import com.mini.rpc.util.ThreadPoolFactory;
+import com.mini.rpc.factory.ThreadPoolFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -90,15 +91,19 @@ public class SocketServer implements RpcServer {
      */
         @Override
         public void  start(){
-            try (ServerSocket serverSocket = new ServerSocket(port)) {
-              //  logger.info("服务器正在启动...");
-                logger.info("服务器启动...");
+
+                try(ServerSocket serverSocket = new ServerSocket()){
+                    serverSocket.bind(new InetSocketAddress(host, port));
+                    logger.info("服务器启动……");
+                    //添加钩子，服务端关闭时会注销服务
+                    ShutdownHook.getShutdownHook().addClearAllHook();
+
                 Socket socket;
                 //当未接收到请求时， accpet()会一直阻塞
 
                 while ((socket = serverSocket.accept()) != null) {
                     logger.info("客户端连接！{}:{}", socket.getInetAddress().getHostAddress(), socket.getPort());
-                    threadPool.execute(new RequestHandlerThread(socket, requestHandler, serializer));
+                    threadPool.execute(new SocketRequestHandlerThread(socket, requestHandler, serializer));
                 }
                 threadPool.shutdown();
             } catch (IOException e) {

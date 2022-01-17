@@ -5,6 +5,7 @@ import com.mini.rpc.codec.CommonDecoder;
 import com.mini.rpc.codec.CommonEncoder;
 import com.mini.rpc.enumeration.RpcError;
 import com.mini.rpc.exception.RpcException;
+import com.mini.rpc.hook.ShutdownHook;
 import com.mini.rpc.provider.ServiceProvider;
 import com.mini.rpc.provider.ServiceProviderImpl;
 import com.mini.rpc.registry.NacosServiceRegistry;
@@ -132,6 +133,10 @@ public class NettyServer implements RpcServer {
             //serverBootstrap.bind(port)就是绑定端口，sync()是同步方法 这里代表阻塞主线程Server线程
 
             ChannelFuture future = serverBootstrap.bind(host,port).sync();
+
+
+            //添加注销服务的钩子，服务端关闭时才会执行
+            ShutdownHook.getShutdownHook().addClearAllHook();
 
             //通过ChannelFuture可以获取到Channel，从而利用Channel在通道上进行读、写、关闭等操作；
             //等确定通道关闭了，关闭future回到主Server线程

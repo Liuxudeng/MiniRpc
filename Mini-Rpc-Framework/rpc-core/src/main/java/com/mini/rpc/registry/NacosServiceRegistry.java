@@ -42,7 +42,7 @@ public class NacosServiceRegistry implements ServiceRegistry {
 
         try {
             //Nacos注册服务
-                NacosUtil.registerService(namingService,serviceName,inetSocketAddress);
+                NacosUtil.registerService(serviceName,inetSocketAddress);
         } catch (NacosException e) {
             logger.info("注册服务时有错误发生");
             throw new RpcException(RpcError.REGISTER_SERVICE_FAILED);

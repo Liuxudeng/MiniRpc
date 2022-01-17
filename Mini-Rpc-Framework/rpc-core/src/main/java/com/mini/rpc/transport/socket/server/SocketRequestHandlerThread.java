@@ -14,18 +14,18 @@ import org.slf4j.LoggerFactory;
 import java.io.*;
 import java.net.Socket;
 
-public class RequestHandlerThread implements Runnable{
+public class SocketRequestHandlerThread implements Runnable{
 
 
     //日志文件
-    private static final Logger logger = LoggerFactory.getLogger(RequestHandlerThread.class);
+    private static final Logger logger = LoggerFactory.getLogger(SocketRequestHandlerThread.class);
 
     private Socket socket;
     private RequestHandler requestHandler;
 
     private CommonSerializer serializer;
 
-    public RequestHandlerThread(Socket socket, RequestHandler requestHandler
+    public SocketRequestHandlerThread(Socket socket, RequestHandler requestHandler
             ,CommonSerializer serializer) {
         this.socket = socket;
         this.requestHandler = requestHandler;

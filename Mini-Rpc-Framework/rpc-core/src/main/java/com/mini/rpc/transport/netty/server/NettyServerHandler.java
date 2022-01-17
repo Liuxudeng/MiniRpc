@@ -3,7 +3,7 @@ package com.mini.rpc.transport.netty.server;
 
 import com.mini.rpc.entity.RpcRequest;
 import com.mini.rpc.handler.RequestHandler;
-import com.mini.rpc.util.ThreadPoolFactory;
+import com.mini.rpc.factory.ThreadPoolFactory;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
@@ -27,7 +27,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<RpcRequest> 
 
     private static final ExecutorService theadPool;
 
-static {
+  static {
     requestHandler = new RequestHandler();
     //引入异步线程池，避免长时间的耗时业务阻塞netty本身的worker工作线程
     //耽误了同一个selector中其他任务的执行

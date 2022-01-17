@@ -22,37 +22,32 @@ public class RequestHandler {
         serviceProvider = new ServiceProviderImpl();
    }
 
-   public Object handle(RpcRequest rpcRequest){
-        Object result = null;
+   public Object handle(RpcRequest rpcRequest) {
+
 
         //从服务端本地注册表获取服务实体
        Object service = serviceProvider.getServiceProvider(rpcRequest.getInterfaceName());
+
+
+        return invokeTargetMethod(rpcRequest,service);
+
+    }
+
+
+    private Object invokeTargetMethod(RpcRequest rpcRequest,Object service) {
+      Object result;
         try{
-            result = invokeTargetMethod(rpcRequest,service);
+           Method method = service.getClass().getMethod(rpcRequest.getMethodName(),rpcRequest.getParamTypes());
+            result = method.invoke(service,rpcRequest.getParameters());
+
             logger.info("服务：{}成功调用方法：{}",rpcRequest.getInterfaceName(),rpcRequest.getMethodName());
-
-
-        }catch (IllegalAccessException| InvocationTargetException e){
-            logger.info("调用发生错误"+e);
-
-        }
-
-        return RpcResponse.success(result,rpcRequest.getRequestId());
-
-    }
-
-
-    private Object invokeTargetMethod(RpcRequest rpcRequest,Object service) throws InvocationTargetException, IllegalAccessException {
-        Method method ;
-        try{
-            method = service.getClass().getMethod(rpcRequest.getMethodName(),rpcRequest.getParamTypes());
-        }catch (NoSuchMethodException e){
-         //   return RpcResponse.fail(ResponseCode.CLASS_NOT_FOUND);
-
           //  logger.info("调用或发送时有错误发生："+e);
+          //  return RpcResponse.fail(ResponseCode.METHOD_NOT_FOUND, rpcRequest.getRequestId());
+        }catch  (NoSuchMethodException | IllegalAccessException | InvocationTargetException e){
+            //方法调用失败
             return RpcResponse.fail(ResponseCode.METHOD_NOT_FOUND, rpcRequest.getRequestId());
-        }
-        return method.invoke(service, rpcRequest.getParameters());
     }
-
+        //方法调用成功
+        return RpcResponse.success(result,rpcRequest.getRequestId());
+}
 }
