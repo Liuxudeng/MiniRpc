@@ -87,7 +87,7 @@ public class SocketClient implements RpcClient {
 
             RpcMessageChecker.check(rpcRequest,rpcResponse);
 
-            return rpcResponse.getData();
+            return rpcResponse;
 
 
             //读到inputStream接收的消息

@@ -6,12 +6,12 @@ import java.util.Map;
 /**
  * 单例工厂 保证一个类只有一个实例，节约资源， 保证线程安全
  */
-public class SingleFactory {
+public class SingletonFactory {
 
     private static Map<Class, Object> objectMap = new HashMap<>();
 
 
-    private SingleFactory() {
+    private SingletonFactory() {
 
     }
 
