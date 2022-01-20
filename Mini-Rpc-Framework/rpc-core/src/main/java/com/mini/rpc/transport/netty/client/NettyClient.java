@@ -2,6 +2,8 @@ package com.mini.rpc.transport.netty.client;
 
 
 import com.mini.rpc.factory.SingletonFactory;
+import com.mini.rpc.loadbalancer.LoadBalancer;
+import com.mini.rpc.loadbalancer.RandomLoadBalancer;
 import com.mini.rpc.registry.NacosServiceDiscovery;
 import com.mini.rpc.registry.ServiceDiscovery;
 import com.mini.rpc.transport.RpcClient;
@@ -49,11 +51,20 @@ public class NettyClient implements RpcClient {
     private final UnprocessedRequests unprocessedRequests;
    public NettyClient(){
        //以默认序列化器调用构造函数
-       this(DEFAULT_SERIALIZER);
+       this(DEFAULT_SERIALIZER,new RandomLoadBalancer());
    }
 
+    public NettyClient(LoadBalancer loadBalancer){
+        this(DEFAULT_SERIALIZER, loadBalancer);
+    }
+
     public NettyClient(Integer serializerCode){
-        serviceDiscovery = new NacosServiceDiscovery();
+
+        this(serializerCode, new RandomLoadBalancer());
+    }
+
+    public NettyClient(Integer serializerCode,LoadBalancer loadBalancer){
+        serviceDiscovery = new NacosServiceDiscovery(loadBalancer);
         serializer = CommonSerializer.getByCode(serializerCode);
         unprocessedRequests = SingletonFactory.getInstance(UnprocessedRequests.class);
     }

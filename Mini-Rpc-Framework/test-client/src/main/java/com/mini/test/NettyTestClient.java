@@ -1,5 +1,6 @@
 package com.mini.test;
 
+import com.mini.rpc.loadbalancer.RoundRobinLoadBalancer;
 import com.mini.rpc.serializer.CommonSerializer;
 import com.mini.rpc.serializer.HessianSerializer;
 import com.mini.rpc.transport.RpcClient;
@@ -18,7 +19,7 @@ public class NettyTestClient {
       //  NettyClient client = new NettyClient("127.0.0.1", 9919);
 //        RpcClient client = new NettyClient();
 //        client.setSerializer(new ProtostuffSerializer());
-        RpcClient client = new NettyClient(CommonSerializer.PROTOBUF_SERIALIZER);
+        RpcClient client = new NettyClient(CommonSerializer.PROTOBUF_SERIALIZER,new RoundRobinLoadBalancer());
 
         RpcClientProxy rpcClientProxy = new RpcClientProxy(client);
 

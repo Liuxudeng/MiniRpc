@@ -6,6 +6,7 @@ import com.mini.rpc.entity.RpcResponse;
 import com.mini.rpc.transport.netty.client.NettyClient;
 
 import com.mini.rpc.transport.socket.client.SocketClient;
+import com.mini.rpc.util.RpcMessageChecker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,17 +74,17 @@ public class RpcClientProxy implements InvocationHandler {
 
         //注意这里RpcRequest参数的参数的数据要和原始接口中的数据保持一致
         RpcRequest rpcRequest = new RpcRequest(method.getDeclaringClass().getName(),
-                method.getName(), args, method.getParameterTypes(), UUID.randomUUID().toString(), true);
+                method.getName(), args, method.getParameterTypes(), UUID.randomUUID().toString(), false);
         //  return client.sendRequest(rpcRequest);
 
-        Object result = null;
+      RpcResponse rpcResponse = null;
         if (client instanceof NettyClient) {
             //异步获取调用结果
             CompletableFuture<RpcResponse> completableFuture = (CompletableFuture<RpcResponse>)
                     client.sendRequest(rpcRequest);
 
             try {
-                result = completableFuture.get().getData();
+                rpcResponse= completableFuture.get();
 
             } catch (InterruptedException | ExecutionException e) {
                 logger.error("方法调用请求发动失败", e);
@@ -92,13 +93,13 @@ public class RpcClientProxy implements InvocationHandler {
         }
 
             if (client instanceof SocketClient) {
-                RpcResponse rpcResponse = (RpcResponse) client.sendRequest(rpcRequest);
-                result = rpcResponse.getData();
+                 rpcResponse = (RpcResponse) client.sendRequest(rpcRequest);
+
             }
+        RpcMessageChecker.check(rpcRequest,rpcResponse);
 
 
-
-        return result;
+        return rpcResponse.getData();
 
     }
 }

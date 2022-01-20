@@ -1,6 +1,8 @@
 package com.mini.rpc.transport.socket.client;
 
 
+import com.mini.rpc.loadbalancer.LoadBalancer;
+import com.mini.rpc.loadbalancer.RandomLoadBalancer;
 import com.mini.rpc.registry.NacosServiceDiscovery;
 import com.mini.rpc.registry.ServiceDiscovery;
 import com.mini.rpc.transport.RpcClient;
@@ -28,10 +30,21 @@ public class SocketClient implements RpcClient {
     private final ServiceDiscovery serviceDiscovery;
 
     public SocketClient() {
-        this(DEFAULT_SERIALIZER);
+        this(DEFAULT_SERIALIZER,new RandomLoadBalancer());
+    }
+
+    public SocketClient(LoadBalancer loadBalancer){
+        this(DEFAULT_SERIALIZER,loadBalancer);
+
     }
     public SocketClient(Integer serializerCode) {
-        serviceDiscovery = new NacosServiceDiscovery();
+       this(DEFAULT_SERIALIZER,new RandomLoadBalancer());
+
+    }
+
+
+    public SocketClient(Integer serializerCode,LoadBalancer loadBalancer){
+        serviceDiscovery = new NacosServiceDiscovery(loadBalancer);
         serializer = CommonSerializer.getByCode(serializerCode);
     }
 
