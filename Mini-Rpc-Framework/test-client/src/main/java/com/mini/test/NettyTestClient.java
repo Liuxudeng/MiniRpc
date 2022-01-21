@@ -1,5 +1,6 @@
 package com.mini.test;
 
+import com.mini.rpc.api.ByeService;
 import com.mini.rpc.loadbalancer.RoundRobinLoadBalancer;
 import com.mini.rpc.serializer.CommonSerializer;
 import com.mini.rpc.serializer.HessianSerializer;
@@ -34,6 +35,9 @@ public class NettyTestClient {
         String res = helloService.hello(object);
 
         System.out.println(res);
+
+        ByeService byeService = rpcClientProxy.getProxy(ByeService.class);
+        System.out.println(byeService.bye("Netty"));
 
     }
 }

@@ -10,6 +10,7 @@ import com.mini.rpc.util.RpcMessageChecker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -80,13 +81,16 @@ public class RpcClientProxy implements InvocationHandler {
       RpcResponse rpcResponse = null;
         if (client instanceof NettyClient) {
             //异步获取调用结果
-            CompletableFuture<RpcResponse> completableFuture = (CompletableFuture<RpcResponse>)
-                    client.sendRequest(rpcRequest);
+          //  CompletableFuture<RpcResponse> completableFuture = (CompletableFuture<RpcResponse>)
+            //        client.sendRequest(rpcRequest);
 
             try {
+                //异步获取调用结果
+                CompletableFuture<RpcResponse> completableFuture = (CompletableFuture<RpcResponse>)client.sendRequest(rpcRequest);
+
                 rpcResponse= completableFuture.get();
 
-            } catch (InterruptedException | ExecutionException e) {
+            } catch (Exception e) {
                 logger.error("方法调用请求发动失败", e);
                 return null;
             }

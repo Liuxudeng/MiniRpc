@@ -40,11 +40,11 @@ public class ServiceProviderImpl implements ServiceProvider{
 
 
     @Override
-    public  <T> void addServiceProvider(T service,Class<T> serviceClass) {
+    public  <T> void addServiceProvider(T service,String serviceName) {
         /**
          * getName() 和 getCanonicalName() 在获取普通类名的时候没有区别，在获取内部类和数组类有区别的。
          */
-        String serviceName = serviceClass.getCanonicalName();
+       // String serviceName = serviceClass.getCanonicalName();
 
         //如果注册表中有该服务就不在注册
         if(registeredService.contains(serviceName)){

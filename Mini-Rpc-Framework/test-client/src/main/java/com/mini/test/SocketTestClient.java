@@ -1,5 +1,6 @@
 package com.mini.test;
 
+import com.mini.rpc.api.ByeService;
 import com.mini.rpc.loadbalancer.RoundRobinLoadBalancer;
 import com.mini.rpc.serializer.CommonSerializer;
 import com.mini.rpc.transport.RpcClient;
@@ -25,10 +26,11 @@ public class SocketTestClient {
         //接口方法的参数对象
         HelloObject object = new HelloObject(12, "This is test message");
       //返回所有服务
-        for (int i = 0; i < 20; i++) {
-            //有动态代理可知，代理对象和调用hello()实际汇之星invoke()
-            String res = helloService.hello(object);
-            System.out.println(res);
-        }
+        //由动态代理可知，代理对象调用hello()实际会执行invoke()
+        String res = helloService.hello(object);
+        System.out.println(res);
+        System.out.println("--------");
+        ByeService byeService = proxy.getProxy(ByeService.class);
+        System.out.println(byeService.bye("Netty"));
     }
 }

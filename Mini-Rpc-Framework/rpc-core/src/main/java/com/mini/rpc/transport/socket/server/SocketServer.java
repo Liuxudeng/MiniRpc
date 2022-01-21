@@ -11,6 +11,7 @@ import com.mini.rpc.registry.NacosServiceRegistry;
 import com.mini.rpc.registry.ServiceRegistry;
 import com.mini.rpc.serializer.CommonSerializer;
 
+import com.mini.rpc.transport.AbstractRpcServer;
 import com.mini.rpc.transport.RpcServer;
 import com.mini.rpc.factory.ThreadPoolFactory;
 import org.slf4j.Logger;
@@ -25,7 +26,7 @@ import java.util.concurrent.*;
 /**
  * 服务端实现反射调用
  */
-public class SocketServer implements RpcServer {
+public class SocketServer extends AbstractRpcServer {
 
     //设置日志
     private static final Logger logger = LoggerFactory.getLogger(SocketServer.class);
@@ -42,16 +43,14 @@ public class SocketServer implements RpcServer {
     private RequestHandler requestHandler = new RequestHandler();
     private final ExecutorService threadPool;
 
-    private final ServiceRegistry serviceRegistry;
+
 
     private CommonSerializer serializer;
 
 
-    private final String host;
-    private final int port;
 
 
-        private final ServiceProvider serviceProvider;
+
 
     public SocketServer(String host, int port) {
         this(host, port, DEFAULT_SERIALIZER);
@@ -91,6 +90,9 @@ public class SocketServer implements RpcServer {
 
         //创建线程池
         threadPool = ThreadPoolFactory.createDefaultThreadPool("socket-rpc-server");
+
+             //自动注册服务
+             scanServices();
     }
     /**
      * 服务端启动
@@ -133,15 +135,6 @@ public class SocketServer implements RpcServer {
      * @param serviceClass
      * @param <T>
      */
-    @Override
-    public <T> void publishService(T service, Class<T> serviceClass) {
-        if (serializer == null){
-            logger.error("未设置序列化器");
-            throw new RpcException(RpcError.SERIALIZER_NOT_FOUND);
-        }
-        serviceProvider.addServiceProvider(service,serviceClass);
-        serviceRegistry.register(serviceClass.getCanonicalName(), new InetSocketAddress(host, port));
-        start();
-    }
+
 
 }
