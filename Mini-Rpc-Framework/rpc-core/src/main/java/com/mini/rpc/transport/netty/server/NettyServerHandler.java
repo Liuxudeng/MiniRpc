@@ -13,10 +13,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.ExecutorService;
-
-/**
- * Netty中处理从客户端传来的RpcRequest
- */
+//
+///**
+// * Netty中处理从客户端传来的RpcRequest
+// */
 public class NettyServerHandler extends SimpleChannelInboundHandler<RpcRequest> {
     private static final Logger logger = LoggerFactory.getLogger(NettyServerHandler.class);
 
@@ -45,7 +45,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<RpcRequest> 
 
 
     @Override
-    protected void messageReceived(ChannelHandlerContext ctx, RpcRequest msg) throws Exception {
+    protected void channelRead0(ChannelHandlerContext ctx, RpcRequest msg) throws Exception {
 
      try {
          if(msg.getHeartBeat()){
@@ -74,3 +74,5 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<RpcRequest> 
         ctx.close();
     }
 }
+
+

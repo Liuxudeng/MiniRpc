@@ -16,7 +16,7 @@ import java.util.Set;
 /**
  * 扫描服务类进行服务注册
  */
-public class AbstractRpcServer implements RpcServer{
+public abstract  class AbstractRpcServer implements RpcServer{
 
     protected Logger logger = LoggerFactory.getLogger(AbstractRpcServer.class);
     protected String host;
@@ -102,9 +102,9 @@ public class AbstractRpcServer implements RpcServer{
         serviceRegistry.register(serviceName, new InetSocketAddress(host, port));
     }
 
-
-@Override
-    public void start(){
-
-}
+//
+//@Override
+//    public void start(){
+//
+//}
 }

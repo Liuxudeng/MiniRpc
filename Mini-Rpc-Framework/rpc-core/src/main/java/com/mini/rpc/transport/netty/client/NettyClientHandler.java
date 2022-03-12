@@ -19,6 +19,7 @@ import java.net.InetSocketAddress;
 
 /**
  * 客户端Netty处理器
+ * @author win10
  */
 public class NettyClientHandler extends SimpleChannelInboundHandler<RpcResponse> {
     private static final Logger logger = LoggerFactory.getLogger(NettyClientHandler.class);
@@ -69,7 +70,7 @@ public class NettyClientHandler extends SimpleChannelInboundHandler<RpcResponse>
 
 
     @Override
-    protected void messageReceived(ChannelHandlerContext ctx, RpcResponse msg) throws Exception {
+    protected void channelRead0(ChannelHandlerContext ctx, RpcResponse msg) throws Exception {
         try {
             logger.info(String.format("客户端接收到消息：%s", msg));
             //将响应数据取出

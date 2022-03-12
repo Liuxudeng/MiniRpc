@@ -22,11 +22,11 @@ import java.util.List;
 public class NacosServiceRegistry implements ServiceRegistry {
     private static final Logger logger = LoggerFactory.getLogger(NacosServiceRegistry.class);
 
-   public final NamingService namingService;
+ //  public final NamingService namingService;
 
-   public NacosServiceRegistry(){
-       namingService = NacosUtil.getNacosNamingService();
-   }
+//   public NacosServiceRegistry(){
+//       namingService = NacosUtil.getNacosNamingService();
+//   }
 
 
 
